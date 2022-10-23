@@ -4,6 +4,15 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+)
+
+const (
+	pink = lipgloss.Color("#FFC0CB")
+)
+
+var (
+	title = lipgloss.NewStyle().Foreground(pink)
 )
 
 func NewMenu() View {
@@ -14,7 +23,9 @@ func NewMenu() View {
 }
 
 func menuView(m model) string {
-	s := "What do you want to do?\n"
+	t := title.Width(100).Render("Manage your blockchain")
+
+	s := fmt.Sprintf("%s\nIt currently have %d blocks\n", t, len(m.blockchain.Blocks))
 
 	for i, option := range m.options {
 		cursor := " "

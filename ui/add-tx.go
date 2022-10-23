@@ -55,7 +55,7 @@ func addTxInit(m model) model {
 
 func addTxView(m model) string {
 	return fmt.Sprintf(
-		"New transaction:\n%s\n%s\n%s\n%s\n%s\n%s\n",
+		"New transaction:\n%s\n%s\n%s\n%s\n%s\n%s\n\nPress Enter to finish\n",
 		inputStyle.Width(30).Render("Sender"),
 		m.inputs[sender].View(),
 		inputStyle.Width(30).Render("Receiver"),
@@ -71,7 +71,7 @@ func addTxUpdate(m model, msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyCtrlC:
-			return m, tea.Quit
+			m = changeView(m, menu)
 		case tea.KeyShiftTab:
 			m = prevInput(m)
 		case tea.KeyTab:
