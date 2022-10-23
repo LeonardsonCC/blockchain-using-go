@@ -6,9 +6,10 @@ import (
 )
 
 type Blockchain struct {
-	Timestamp time.Time `json:"timestamp"`
-	Blocks    []Block   `json:"blocks"`
-	Hash      Hash      `json:"hash"`
+	Timestamp   time.Time `json:"timestamp"`
+	Blocks      []Block   `json:"blocks"`
+	Hash        Hash      `json:"hash"`
+	TxsPerBlock int       `json:"txs_per_block"`
 }
 
 func NewBlockchain(timestamp time.Time, difficulty int) *Blockchain {
@@ -17,6 +18,7 @@ func NewBlockchain(timestamp time.Time, difficulty int) *Blockchain {
 		Blocks: []Block{
 			*NewBlock(timestamp, []Tx{*NewTx(timestamp, *NewData("null", "null", 0), "0", difficulty)}, "0"), // genesis block
 		},
+		TxsPerBlock: 10, // default value for testing
 	}
 
 	return bc
@@ -24,10 +26,14 @@ func NewBlockchain(timestamp time.Time, difficulty int) *Blockchain {
 
 func (b *Blockchain) AddTx(timestamp time.Time, data *Data) {
 	lastBlock := b.Blocks[len(b.Blocks)-1]
-	lastBlock.AddTx(timestamp, data)
-
-	// updates the block, because it's not a pointer
-	b.Blocks[len(b.Blocks)-1] = lastBlock
+	if len(lastBlock.Txs) < b.TxsPerBlock {
+		lastBlock.AddTx(timestamp, data)
+		b.Blocks[len(b.Blocks)-1] = lastBlock
+	} else {
+		newBlock := NewBlock(time.Now(), []Tx{}, lastBlock.Hash)
+		newBlock.AddTx(time.Now(), data)
+		b.Blocks = append(b.Blocks, *newBlock)
+	}
 }
 
 func (b *Blockchain) ToString() string {

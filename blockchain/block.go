@@ -30,7 +30,11 @@ func NewBlock(timestamp time.Time, txs []Tx, precedingHash Hash) *Block {
 
 func (b *Block) AddTx(timestamp time.Time, data *Data) {
 	// getting the last tx hash
-	tx := NewTx(timestamp, *data, b.Txs[len(b.Txs)-1].Hash, b.Difficulty)
+	var hash Hash
+	if len(b.Txs) > 0 {
+		hash = b.Txs[len(b.Txs)-1].Hash
+	}
+	tx := NewTx(timestamp, *data, hash, b.Difficulty)
 	b.Txs = append(b.Txs, *tx)
 	b.Hash = b.computeHash()
 }
