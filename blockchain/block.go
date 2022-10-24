@@ -54,6 +54,10 @@ func (t *Block) computeHash() Hash {
 	return Hash(h)
 }
 
+func (b *Block) Hex() string {
+	return string(b.Hash)[0:6]
+}
+
 func (t *Block) ToString() string {
 	s, _ := json.Marshal(t)
 	return string(s)

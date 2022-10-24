@@ -23,7 +23,7 @@ func NewMenu() View {
 }
 
 func menuView(m model) string {
-	t := title.Width(100).Render("Manage your blockchain")
+	t := title.Render("Manage your blockchain")
 
 	s := fmt.Sprintf("%s\nIt currently have %d blocks\n", t, len(m.blockchain.Blocks))
 

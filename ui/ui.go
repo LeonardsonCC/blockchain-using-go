@@ -28,6 +28,8 @@ const (
 	menu = iota
 	addTx
 	listBlocks
+	prettyListBlocks
+	prettyViewBlock
 )
 
 type model struct {
@@ -38,6 +40,7 @@ type model struct {
 	currentView   int
 	inputs        []textinput.Model
 	selectedInput int
+	selectedBox   int
 }
 
 func Start(blockchain *blockchain.Blockchain) *tea.Program {
@@ -74,12 +77,21 @@ func initialModel(blockchain *blockchain.Blockchain) model {
 				return m
 			},
 		},
+		{
+			Text: "Pretty - List Blocks",
+			Fn: func(m model) model {
+				m = changeView(m, prettyListBlocks)
+				return m
+			},
+		},
 	}
 
 	views := Views{
-		menu:       NewMenu(),
-		addTx:      NewAddTx(),
-		listBlocks: NewListBlocks(),
+		menu:             NewMenu(),
+		addTx:            NewAddTx(),
+		listBlocks:       NewListBlocks(),
+		prettyListBlocks: NewPrettyListBlocks(),
+		prettyViewBlock:  NewPrettyViewBlock(),
 	}
 
 	return model{
