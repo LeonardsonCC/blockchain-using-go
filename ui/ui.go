@@ -6,7 +6,9 @@ import (
 
 	"github.com/LeonardsonCC/blockchain-using-go/blockchain"
 	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 type Option struct {
@@ -41,10 +43,17 @@ type model struct {
 	inputs        []textinput.Model
 	selectedInput int
 	selectedBox   int
+	viewport      viewport.Model
+	ready         bool
+	width         int
+	height        int
 }
 
 func Start(blockchain *blockchain.Blockchain) *tea.Program {
-	p := tea.NewProgram(initialModel(blockchain))
+	p := tea.NewProgram(
+		initialModel(blockchain),
+		tea.WithAltScreen(),
+	)
 
 	if err := p.Start(); err != nil {
 		fmt.Printf("there's been an error: %v", err)
@@ -107,6 +116,18 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.height = msg.Height
+		m.width = msg.Width
+		headerHeight := lipgloss.Height(m.headerView())
+		footerHeight := lipgloss.Height(m.footerView())
+		verticalMarginHeight := headerHeight + footerHeight
+
+		m.viewport = viewport.New(msg.Width, msg.Height-verticalMarginHeight)
+		m.viewport.YPosition = headerHeight
+	}
+
 	return m.views[m.currentView].Update(m, msg)
 }
 
